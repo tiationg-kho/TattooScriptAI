@@ -1,9 +1,13 @@
+/* eslint-disable react-refresh/only-export-components */
+/* eslint-disable react/prop-types */
 import ReactDOM from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { GoogleOAuthProvider } from '@react-oauth/google';
+import { useState } from 'react';
 
 import App from './App.jsx';
 import './index.css';
+import { Context } from './components/Context.jsx';
 
 const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
@@ -14,8 +18,18 @@ const router = createBrowserRouter([
 	},
 ]);
 
+const ContextProvider = ({ children }) => {
+	const [email, setEmail] = useState('');
+
+	return (
+		<Context.Provider value={{ email, setEmail }}>{children}</Context.Provider>
+	);
+};
+
 ReactDOM.createRoot(document.getElementById('root')).render(
 	<GoogleOAuthProvider clientId={googleClientId}>
-		<RouterProvider router={router} />
+		<ContextProvider>
+			<RouterProvider router={router} />
+		</ContextProvider>
 	</GoogleOAuthProvider>
 );

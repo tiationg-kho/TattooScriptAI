@@ -1,11 +1,27 @@
-import { useState, useEffect } from 'react';
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useState, useEffect, useContext } from 'react';
+
 import './App.css';
-import Login from './components/Login';
 import { fetchLoginCheck } from './apis/fetchLoginCheck';
+import { Context } from './components/Context';
+import PublicPage from './components/PublicPage';
+import ProtectedPage from './components/ProtectedPage';
 
 function App() {
 	const [login, setLogin] = useState(false);
-	const [email, setEmail] = useState('');
+	const { setEmail } = useContext(Context);
+
+	const handleLogin = (token, email) => {
+		localStorage.setItem('tsai_token', token);
+		setLogin(true);
+		setEmail(email);
+	};
+
+	const handleLogout = () => {
+		setLogin(false);
+		setEmail('');
+		localStorage.removeItem('tsai_token');
+	};
 
 	useEffect(() => {
 		const token = localStorage.getItem('tsai_token');
@@ -15,32 +31,22 @@ function App() {
 				try {
 					const { data } = await fetchLoginCheck(token);
 					if (data.email) {
-						setLogin(true);
-						setEmail(data.email);
+						handleLogin(token, data.email);
 					} else {
 						throw new Error();
 					}
 				} catch (e) {
-					setLogin(false);
-					setEmail('');
-					localStorage.removeItem('tsai_token');
+					handleLogout();
 				}
 			};
 			loginCheck();
 		}
 	}, []);
 
-	const handleLogin = (token, email) => {
-		localStorage.setItem('tsai_token', token);
-		setLogin(true);
-		setEmail(email);
-	};
-
 	return (
 		<>
-			{!login && <Login handleLogin={handleLogin} />}
-			{!login && <div>Please login</div>}
-			{login && <div>Welcome: {email}</div>}
+			{!login && <PublicPage handleLogin={handleLogin} />}
+			{login && <ProtectedPage handleLogout={handleLogout} />}
 		</>
 	);
 }

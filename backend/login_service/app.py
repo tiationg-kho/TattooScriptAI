@@ -56,16 +56,50 @@ def login():
 
 @app.route("/api/v1/login", methods=["GET"])
 def login_check():
-    token = request.headers.get("Authorization")[7:]
-    if not token:
-        return jsonify({"message": "Token is missing!"}), 401
     try:
+        auth = request.headers.get("Authorization")
+        if not auth:
+            return jsonify({"message": "Token is missing!"}), 401
+        token = auth[7:]
         data = jwt.decode(token, secret_key, algorithms=["HS256"])
         return jsonify({"message": "Token is valid", "data": data})
     except jwt.ExpiredSignatureError:
         return jsonify({"message": "Token has expired!"}), 401
     except jwt.InvalidTokenError:
         return jsonify({"message": "Invalid token!"}), 401
+
+
+@app.route("/api/v1/credit", methods=["GET"])
+def credit_check():
+    try:
+        auth = request.headers.get("Authorization")
+        if not auth:
+            raise ValueError("Token is missing!")
+        token = auth[7:]
+        data = jwt.decode(token, secret_key, algorithms=["HS256"])
+        user = User.get_by_email(data['email'])
+        return jsonify({"data": user.credit})
+    except Exception as e:
+        return jsonify({"message": str(e)}), 500
+
+
+@app.route("/api/v1/credit/deduct", methods=["PATCH"])
+def credit_deduct():
+    try:
+        auth = request.headers.get("Authorization")
+        if not auth:
+            raise ValueError("Token is missing!")
+        token = auth[7:]
+        data = jwt.decode(token, secret_key, algorithms=["HS256"])
+        user = User.get_by_email(data['email'])
+        if user and user.credit > 0:
+            user.credit -= 1
+            db.session.commit()
+            return jsonify({"data": user.credit})
+        else:
+            raise ValueError("Invalid user and credit!")
+    except Exception as e:
+        return jsonify({"message": str(e)}), 400
 
 
 if __name__ == "__main__":

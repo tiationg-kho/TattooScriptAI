@@ -20,9 +20,12 @@ const router = createBrowserRouter([
 
 const ContextProvider = ({ children }) => {
 	const [email, setEmail] = useState('');
+	const [url, setUrl] = useState('');
 
 	return (
-		<Context.Provider value={{ email, setEmail }}>{children}</Context.Provider>
+		<Context.Provider value={{ email, setEmail, url, setUrl }}>
+			{children}
+		</Context.Provider>
 	);
 };
 

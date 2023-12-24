@@ -1,20 +1,31 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/prop-types */
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 
 import { fetchCreditCheck } from '../apis/fetchCreditCheck';
 import { fetchCreditDeduct } from '../apis/fetchCreditDeduct';
 import { buildSocket, closeSocket, getBuiltSocket } from '../apis/socketInput';
+import { Context } from './Context';
 
 const Input = ({ handleLogout }) => {
 	const [text, setText] = useState('');
 	const [credit, setCredit] = useState(0);
 	const [error, setError] = useState('');
 	const [isAllowed, setIsAllowed] = useState(true);
+	const { setUrl } = useContext(Context);
 
 	useEffect(() => {
 		const token = localStorage.getItem('tsai_token');
-
+		const urlCheck = () => {
+			const url = localStorage.getItem('url');
+			if (url) {
+				setUrl(url);
+				setError('');
+			} else {
+				setUrl('');
+			}
+		};
+		const intervalId = setInterval(urlCheck, 1000);
 		if (token) {
 			const creditCheck = async () => {
 				const { data } = await fetchCreditCheck(token);
@@ -25,6 +36,11 @@ const Input = ({ handleLogout }) => {
 			};
 			creditCheck();
 		}
+		return () => {
+			localStorage.removeItem('url');
+			setUrl('');
+			clearInterval(intervalId);
+		};
 	}, []);
 
 	const handleChange = (e) => {
@@ -37,7 +53,7 @@ const Input = ({ handleLogout }) => {
 			return;
 		}
 		if (getBuiltSocket()) {
-			return setError('Your tattoo is still processing.');
+			return setError('Your tattoo is still processing..');
 		}
 		if (!text || text.trim().length === 0) {
 			return setError('Input is required.');
@@ -61,6 +77,7 @@ const Input = ({ handleLogout }) => {
 
 			buildSocket(text.trim());
 			setText('');
+			setError('Your tattoo is still processing..');
 		} catch (error) {
 			setError('Something went wrong.');
 			handleLogout();
@@ -86,7 +103,7 @@ const Input = ({ handleLogout }) => {
 					<span>{error}</span>
 				</div>
 			</form>
-			<button onClick={closeSocket}>Close socket</button>
+			<button onClick={closeSocket}>Cancel</button>
 		</>
 	);
 };

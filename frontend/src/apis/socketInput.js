@@ -12,7 +12,9 @@ export const buildSocket = (message) => {
 	};
 
 	socket.onmessage = (event) => {
-		console.log('Message from server:', event.data);
+		console.log('Message from server received: ', event.data);
+		localStorage.setItem('url', event.data);
+		closeSocket();
 	};
 };
 
@@ -20,6 +22,7 @@ export const closeSocket = () => {
 	if (socket) {
 		socket.close();
 		socket = null;
+		console.log('close socket');
 	}
 };
 

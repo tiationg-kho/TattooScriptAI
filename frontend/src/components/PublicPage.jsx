@@ -1,5 +1,6 @@
 /* eslint-disable react/prop-types */
 import Login from './Login';
+import tiger from '../assets/tiger.png';
 
 const PublicPage = ({ handleLogin }) => {
 	return (
@@ -9,6 +10,13 @@ const PublicPage = ({ handleLogin }) => {
 				<Login handleLogin={handleLogin} />
 			</div>
 			<div>Please login</div>
+			<div>
+				<img
+					src={tiger}
+					alt='tiger image'
+					style={{ width: '200px', height: '200px' }}
+				/>
+			</div>
 		</>
 	);
 };

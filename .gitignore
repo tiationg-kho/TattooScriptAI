@@ -165,3 +165,5 @@ node_modules
 .env.production
 myprojectenv
 .vscode/
+secret.yaml
+infrastructure/

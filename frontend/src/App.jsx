@@ -6,6 +6,7 @@ import { fetchLoginCheck } from './apis/fetchLoginCheck';
 import { Context } from './components/Context';
 import PublicPage from './components/PublicPage';
 import ProtectedPage from './components/ProtectedPage';
+import { closeSocket } from './apis/socketInput';
 
 function App() {
 	const [login, setLogin] = useState(false);
@@ -18,6 +19,7 @@ function App() {
 	};
 
 	const handleLogout = () => {
+		closeSocket();
 		setLogin(false);
 		setEmail('');
 		localStorage.removeItem('tsai_token');

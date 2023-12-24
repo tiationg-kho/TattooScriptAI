@@ -6,13 +6,14 @@ import Input from './Input';
 import GeneratedImage from './GeneratedImage';
 
 const ProtectedPage = ({ handleLogout }) => {
-	const { email } = useContext(Context);
+	const { email, url } = useContext(Context);
 
 	return (
 		<>
 			<div>Welcome: {email}</div>
 			<Input handleLogout={handleLogout} />
-			<GeneratedImage />
+			{url && <GeneratedImage url={url} />}
+			<div></div>
 			<button onClick={handleLogout}>Logout</button>
 		</>
 	);

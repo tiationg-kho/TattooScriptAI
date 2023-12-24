@@ -6,7 +6,6 @@ import jakarta.inject.Inject;
 import jakarta.websocket.OnClose;
 import jakarta.websocket.OnMessage;
 import jakarta.websocket.OnOpen;
-import jakarta.websocket.RemoteEndpoint;
 import jakarta.websocket.Session;
 import jakarta.websocket.server.ServerEndpoint;
 
@@ -26,10 +25,6 @@ public class SocketEndpoint {
     public void onOpen(Session session) {
         System.out.println("on open");
         userSessionMap.addUserSession(session.getId(), session);
-
-        RemoteEndpoint.Async asyncRemote = session.getAsyncRemote();
-        asyncRemote.sendText("Hello from server!");
-
         System.out.println(userSessionMap.getSize());
     }
 

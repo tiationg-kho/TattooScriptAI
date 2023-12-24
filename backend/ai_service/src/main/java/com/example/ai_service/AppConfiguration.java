@@ -5,6 +5,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.web.client.RestTemplate;
+import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.s3.S3Client;
 
 import java.util.concurrent.Executor;
 
@@ -26,5 +29,13 @@ public class AppConfiguration {
         executor.setThreadNamePrefix("Async-");
         executor.initialize();
         return executor;
+    }
+
+    @Bean
+    public S3Client s3Client() {
+        return S3Client.builder()
+            .region(Region.US_WEST_2)
+            .credentialsProvider(DefaultCredentialsProvider.create())
+            .build();
     }
 }
